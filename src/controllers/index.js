@@ -1,0 +1,1 @@
+console.log('Controllers index file loaded');
