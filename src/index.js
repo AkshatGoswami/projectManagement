@@ -1,26 +1,24 @@
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 
 dotenv.config({
     path: "./.env",
     override: true
 });
 
-import express from "express";
+import app from "./app.js";
+import connectDB from "./db/index.js";
 
-const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 8000;
 
-app.get("/", (req, res) => {
-    res.send("Hello World");
-});
-app.get("/instagram", (req, res) => {
-    res.send("Welcome to Instagram page");
-});
-app.listen(port, () => {
+connectDB()
+ .then( () => {
+    app.listen(port, () => {
     console.log(`Example app listening on port http://localhost:${port}`);
 });
+ })
+ .catch((error) => {
+    console.error("MongoDB connection error: ", error);
+    process.exit(1);
+ })
 
-let mydatabase = process.env.username;
-console.log("Database: ", mydatabase);
-
-console.log("Backend Project 3");
+console.log("Starting the Project Management System.");
