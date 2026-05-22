@@ -51,7 +51,7 @@ const userSchema = new Schema(
         forgotPasswordTokenExpiry: {
             type: Date,
         },
-        emasilVerificationToken: {
+        emailVerificationToken: {
             type: String,
         },  
         emailVerificationTokenExpiry: {
@@ -70,16 +70,16 @@ userSchema.pre('save', async function (next) {
    this.password = await bcrypt.hash(this.password, 10);
     next();
 });
-userSchema.methods.isPasswordCoreect = async function (password) {
+userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 };
 // Generating the Access token 
 userSchema.methods.generateAccessToken = function(){
     return jwt.sign(
         {
-            _id=this._id,
-            email=this.email,
-            username=this.username
+            _id: this._id,
+            email: this.email,
+            username: this.username
         },
         process.env.ACCESS_TOKEN_SECRET,
         {expiresIn: process.env.ACCESS_TOKEN_EXPIRY}
@@ -87,10 +87,10 @@ userSchema.methods.generateAccessToken = function(){
 }// Access Token generated
 
 // Generating the Refresh Token
-userSchema.methods.RefreshToken = function(){
-    jwt.sign(
+userSchema.methods.generateRefreshToken = function(){
+    return jwt.sign(
         {
-            _id=this._id
+            _id: this._id
         },
         process.env.REFRESH_TOKEN_SECRET,
         {expiresIn:process.env.REFRESH_TOKEN_EXPIRY}
@@ -103,6 +103,7 @@ userSchema.methods.generateTemporaryToken = function(){
     const hashedToken = crypto
     .createHash("sha256")
     .update(unHashedToken)
+    .digest("hex")
     const tokenExpiry = Date.now() + (20*60*1000)//20 mins
     return {unHashedToken, hashedToken, tokenExpiry}
 };//Generated random string without data.
