@@ -1,1 +1,35 @@
-console.log('Validators index file loaded');
+import { body } from "express-validator";
+
+const userRegisterValidator = () => {
+    return [
+        body("email")
+            .trim()
+            .notEmpty()
+            .withMessage("Username is required")
+            .isEmail()
+            .withMessage("Email is invalid"),
+        body("username")
+            .trim()
+            .notEmpty()
+            .withMessage("Username is required")
+            .isLowercase()
+            .withMessage("Usename must be in lower case")
+            .isLength({min:4})
+            .withMessage("Username must be atleast 3 characters long"),
+        body("password")
+            .trim()
+            .notEmpty()
+            .withMessage("Password is required")
+            .isLength({ min: 6 })
+            .withMessage("Password must be at least 6 characters long"),    
+         body("fullName")
+            .trim()
+            .notEmpty()
+            .withMessage("Full name is required")
+            .isLength({ min: 3 })
+            .withMessage("Full name must be at least 3 characters long")     
+            
+    ];
+};
+
+export default userRegisterValidator;
