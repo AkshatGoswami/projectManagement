@@ -52,4 +52,15 @@ const registerUser = asyncHandler(async (req, res) => {
         "User registered successfully. Please check your email to verify your account"
     ));
 });
-export {registerUser};
+const loginUser = asyncHandler(async (req, res) => {
+    return res
+      .status(200)
+      .json(new ApiResponse(
+        200,
+        {user: createdUser},
+        "User login successfully. Please check your email to verify your account"
+    ));
+
+});
+export {registerUser, loginUser};
+cosole.log("auth controllers")
