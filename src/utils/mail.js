@@ -29,6 +29,7 @@ const sendEmail = async (options) => {
         text: emailTextual,
         html: emailHtml
     };
+    console.log('Email content:', mail); // Log the email content for debugging
 
     try {
         await transporter.sendMail(mail);
