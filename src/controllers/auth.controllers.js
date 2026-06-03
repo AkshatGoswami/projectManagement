@@ -63,4 +63,4 @@ const loginUser = asyncHandler(async (req, res) => {
 
 });
 export {registerUser, loginUser};
-cosole.log("auth controllers")
+console.log("auth controllers")
