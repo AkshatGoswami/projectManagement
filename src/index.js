@@ -21,4 +21,3 @@ connectDB()
     process.exit(1);
  })
 
-console.log("Starting the Project Management System.");
