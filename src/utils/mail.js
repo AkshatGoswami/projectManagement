@@ -6,7 +6,7 @@ const sendEmail = async (options) => {
         theme: 'default',
         product: {
             name: 'Task Manager',
-            link: process.env.CLIENT_URL
+            link: "https://taskmanager.com"
         }
     });
 
@@ -14,16 +14,16 @@ const sendEmail = async (options) => {
     const emailHtml = mailGenerator.generate(options.mailgenContent);
 
     const transporter = nodemailer.createTransport({
-        host: process.env.EMAIL_HOST,
-        port: process.env.EMAIL_PORT,
+        host: process.env.MAILTRAP_SMTP_HOST,
+        port: process.env.MAILTRAP_SMTP_PORT,
         auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
+            user: process.env.MAILTRAP_SMTP_USER,
+            pass: process.env.MAILTRAP_SMTP_PASS
         }
     });
 
     const mail = {
-        from: process.env.EMAIL_FROM,
+        from: process.env.EMAIL_FROM || 'mail.taskmanager@example.com',
         to: options.email,
         subject: options.subject,
         text: emailTextual,
@@ -52,8 +52,8 @@ const emailVerificationMailgenContent = (username, verificationUrl) => {
                     link: verificationUrl
                 }
             }
-        },
-        outro: 'Need help, or have questions? just reply email, we\'d love to help'
+        }, 
+        outro: "Need help, or have questions? Just reply to this email, we'd love to help"
     };
 };
 
@@ -70,7 +70,7 @@ const forgotPasswordMailgenContent = (username, passwordResetUrl) => {
                     link: passwordResetUrl
                 }
             },
-            outro: 'Need help, or have questions? Just reply to this email, we\'d love to help'
+            outro: "Need help, or have questions? Just reply to this email, we'd love to help"
         }
     };
 };
