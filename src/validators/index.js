@@ -5,7 +5,7 @@ const userRegisterValidator = () => {
         body("email")
             .trim()
             .notEmpty()
-            .withMessage("Username is required")
+            .withMessage("Email is required")
             .isEmail()
             .withMessage("Email is invalid"),
         body("username")

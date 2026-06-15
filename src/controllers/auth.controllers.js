@@ -2,7 +2,7 @@ import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/api-response.js";
 import { ApiError } from "../utils/api-error.js";
 import { asyncHandler } from "../utils/async-handler.js";
-import { sendEmail } from "../utils/mail.js";
+import { sendEmail, emailVerificationMailgenContent } from "../utils/mail.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -27,29 +27,34 @@ const registerUser = asyncHandler(async (req, res) => {
     }
     const user = await User.create({
         email, password, username, isEmailverified: false
-    })
-    const {unHasedToken, hashedToken, tokenExpiry} = user.generateTemporaryToken();
-    user.emailVerificationToken = hashedToken
-    user.emailVerificationTokenExpiry = tokenExpiry
-    console.log("Generated email verification token:", {unHasedToken, hashedToken, tokenExpiry});
-    await user.save({validateBeforeSave:false});
+    });
+    const { unHashedToken, hashedToken, tokenExpiry } = user.generateTemporaryToken();
+    user.emailVerificationToken = hashedToken;
+    user.emailVerificationTokenExpiry = tokenExpiry;
+    console.log("Generated email verification token:", { unHashedToken, hashedToken, tokenExpiry });
+    await user.save({ validateBeforeSave: false });
+
     await sendEmail({
-        email:user?.email,
+        email: user.email,
         subject: "Please verify your email",
         mailgenContent: emailVerificationMailgenContent(
             user.username,
             `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`
         )
-    })
-    await User.findById(user._id).select("-password -refreshToken -forgotPasswordToken -forgotPasswordTokenExpiry -emailVerificationToken -emailVerificationTokenExpiry");
+    });
+
+    const createdUser = await User.findById(user._id).select(
+        "-password -refreshToken -forgotPasswordToken -forgotPasswordTokenExpiry -emailVerificationToken -emailVerificationTokenExpiry"
+    );
     if (!createdUser) {
-        throw new ApiError(500, "Something went wrong while registering the user")
-    }   
+        throw new ApiError(500, "Something went wrong while registering the user");
+    }
+
     return res
       .status(200)
       .json(new ApiResponse(
         200,
-        {user: createdUser},
+        { user: createdUser },
         "User registered successfully. Please check your email to verify your account"
     ));
 });
