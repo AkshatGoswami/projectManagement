@@ -32,6 +32,7 @@ const userRegisterValidator = () => {
     ];
 };
 const userLoginValidator = () => {
+    //step 6 validate
     return [
         body("email")
             .trim()

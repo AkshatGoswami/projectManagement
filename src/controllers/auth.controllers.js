@@ -58,15 +58,53 @@ const registerUser = asyncHandler(async (req, res) => {
         "User registered successfully. Please check your email to verify your account"
     ));
 });
+
+/*
+  #Steps to login a user
+   1. Take data from user
+   2. Check if user exist
+   3. Check if password is correct 
+   4. Generate Tokens 
+   5. Send tokens in cookies
+   6. Validate
+
+*/ 
+// step 1 take data from user
 const loginUser = asyncHandler(async (req, res) => {
+    const {email, password} = req.body;
+    //Step 2 check if user exist
+    if(!email){         
+        throw new ApiError(400, "Email does'nt exist");
+    }
+    const user = await User.findOne({email});
+    if(!user){
+        throw new ApiError(400, "User does'nt exist");
+    }
+    //Step 3 check if password is correct
+    const isPasswordValid = await user.isPasswordCorrect(password);
+    if(!isPasswordValid){
+        throw new ApiError(400, "Invalid user credentials");
+    }
+    //Step 4 generate tokens
+    const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
+    //Step 5 send tokens in cookies
+    const options = {
+        httpOnly: true,
+        secure: true
+    };
     return res
       .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
       .json(new ApiResponse(
         200,
-        {user: createdUser},
-        "User login successfully. Please check your email to verify your account"
+        {
+            user: user,
+            accessToken,
+            refreshToken
+        },
+        "User login successfully."
     ));
 
 });
 export {registerUser, loginUser};
-console.log("auth controllers")
