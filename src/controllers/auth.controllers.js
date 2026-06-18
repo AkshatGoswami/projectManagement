@@ -59,7 +59,8 @@ const registerUser = asyncHandler(async (req, res) => {
     ));
 });
 
-/*
+const loginUser = asyncHandler(async (req, res) => {
+    /*
   #Steps to login a user
    1. Take data from user
    2. Check if user exist
@@ -70,7 +71,6 @@ const registerUser = asyncHandler(async (req, res) => {
 
 */ 
 // step 1 take data from user
-const loginUser = asyncHandler(async (req, res) => {
     const {email, password} = req.body;
     //Step 2 check if user exist
     if(!email){         
@@ -133,4 +133,37 @@ const logoutUser = asyncHandler(async (req, res) => {
         "User logged out successfully."
       ));
 });
-export { registerUser, loginUser, logoutUser };
+const getCurrentUser = asyncHandler(async(req, res)=>{
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, req.user, "Current user fetched successfully"))
+});
+const verifyEmail = asyncHandler(async(req, res) => {
+    const { verificationToken } = req.params;
+    //req.params is basiically use to get the access of 
+    if(!verificationToken){
+        throw new ApiError(400, "Email verification token is missing")
+    }
+    let hashedToken = crypto
+         .createHash("sha256")
+         .update(verificationToken)
+         .digest("hex")
+    const user = await User.findOne({
+        emailVerificationToken: hashedToken,
+        emailVerificationTokenExpiry: {$gt: Date.now()}
+    })     
+    if(!user){
+        throw new ApiError(400, "Token is invalid or expired")
+    }
+    user.emailVerificationToken = undefined;
+    user.emailVerificationTokenExpiry = undefined;
+    user.isEmailverified = true;
+    //saving to DB
+    await user.save({validateBeforeSave: false});
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, { isEmailverified: true}, "Email is verified"))
+        })
+export { registerUser, loginUser, logoutUser, getCurrentUser, verifyEmail };
