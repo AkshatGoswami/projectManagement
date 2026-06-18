@@ -108,5 +108,3 @@ userSchema.methods.generateTemporaryToken = function(){
 };//Generated random string without data.
              
 export const User = mongoose.model('User', userSchema);
-
- 

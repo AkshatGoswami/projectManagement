@@ -1,13 +1,18 @@
-import { User } from "../models/user.models";
-import { asyncHandler } from "../utils/async-handler";
-import { ApiError } from "../utils/api-error";
+import { User } from "../models/user.models.js";
+import { asyncHandler } from "../utils/async-handler.js";
+import { ApiError } from "../utils/api-error.js";
 import jwt from "jsonwebtoken";
 
 const verifyJWT = asyncHandler(async (req, res, next) => {
-    // Access the access token and normalize the bearer token header
-    const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+    // Access the access token from cookie, Authorization header, request body, or query
+    const token =
+        req.cookies?.accessToken ||
+        req.get("authorization")?.replace(/^Bearer\s+/i, "") ||
+        req.body?.accessToken ||
+        req.query?.accessToken;
+
     if (!token) {
-        throw new ApiError(401, "Unauthorised request");
+        throw new ApiError(401, "Unauthorised request. Access token is missing.");
     }
 
     try {

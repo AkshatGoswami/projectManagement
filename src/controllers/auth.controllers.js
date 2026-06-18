@@ -88,14 +88,15 @@ const loginUser = asyncHandler(async (req, res) => {
     //Step 4 generate tokens
     const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id);
     //Step 5 send tokens in cookies
-    const options = {
+    const cookieOptions = {
         httpOnly: true,
-        secure: true
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
     };
     return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
+      .cookie("accessToken", accessToken, cookieOptions)
+      .cookie("refreshToken", refreshToken, cookieOptions)
       .json(new ApiResponse(
         200,
         {
@@ -107,4 +108,29 @@ const loginUser = asyncHandler(async (req, res) => {
     ));
 
 });
-export {registerUser, loginUser};
+const logoutUser = asyncHandler(async (req, res) => {
+   await User.findByIdAndUpdate(req.user._id, 
+    {
+        $set:{
+         refreshToken: null 
+        }
+    }, 
+        {
+          new: true 
+        });
+    const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+    };
+    return res
+      .status(200)
+      .clearCookie("accessToken", cookieOptions)
+      .clearCookie("refreshToken", cookieOptions)
+      .json(new ApiResponse(
+        200,
+        {},
+        "User logged out successfully."
+      ));
+});
+export { registerUser, loginUser, logoutUser };
