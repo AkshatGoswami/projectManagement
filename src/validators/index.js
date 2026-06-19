@@ -55,5 +55,14 @@ const forgotPasswordValidator = () => {
             .withMessage("Email is invalid")
     ];
 }
+const resetPasswordValidator = () => {
+    return [
+        body("password")
+            .notEmpty()
+            .withMessage("Password is required")
+            .isLength({ min: 6 })
+            .withMessage("Password must be at least 6 characters long")
+    ];
+}   
 
-export { userRegisterValidator, userLoginValidator };
+export { userRegisterValidator, userLoginValidator, forgotPasswordValidator, resetPasswordValidator };
