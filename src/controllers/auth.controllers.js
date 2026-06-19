@@ -2,7 +2,7 @@ import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/api-response.js";
 import { ApiError } from "../utils/api-error.js";
 import { asyncHandler } from "../utils/async-handler.js";
-import { sendEmail, emailVerificationMailgenContent } from "../utils/mail.js";
+import { sendEmail, emailVerificationMailgenContent, forgotPasswordMailgenContent } from "../utils/mail.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -192,6 +192,38 @@ const resendEmailVerification = asyncHandler(async(req, res0) => {
         .json(
             new ApiResponse(200, {}, "Mail has been sent to your email ID")
         )
-})     
+})  
+const forgotPasswordRequest = asyncHandler(async(req, res) => {
+    const {email} = req.body;
+    const user = await User.findOne({email});
+    if(!user){
+        throw new ApiError(400, "Invalid Email")
+    }
+    const {hashedToken, unHashedToken, tokenExpiry} = generateTemporaryToken();
+    user.forgotPasswordToken = hashedToken;
+    user.forgotPasswordTokenExpiry = tokenExpiry;
+    await user.save({validateBeforeSave: false});
+    await sendEmail({
+        email: user?.email,
+        subject:"Please verify your email",
+        mailgenContent: forgotPasswordMailgenContent(
+            user.username,
+            `${req.protocol}://${req.get("host")}/api/v1/users/verify-email/${unHashedToken}`
+        )});
+        return res
+            .status(200)
+            .json (new ApiResponse(
+                200, {}, "Forgot password email has been sent successfully"
+            ));
+});  
 
-export { registerUser, loginUser, logoutUser, getCurrentUser, verifyEmail, resendEmailVerification };
+export { 
+    registerUser,
+    loginUser,
+    logoutUser,
+    getCurrentUser,
+    verifyEmail,
+    forgotPasswordRequest,
+    resendEmailVerification 
+};
+ 

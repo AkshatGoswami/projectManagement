@@ -46,5 +46,14 @@ const userLoginValidator = () => {
             .withMessage("Password is required")
     ];
 };
+const forgotPasswordValidator = () => {
+    return [
+        body("email")
+            .notEmpty()
+            .withMessage("Email is required")
+            .isEmail()
+            .withMessage("Email is invalid")
+    ];
+}
 
 export { userRegisterValidator, userLoginValidator };
