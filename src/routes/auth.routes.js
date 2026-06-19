@@ -1,8 +1,8 @@
 import {Router} from 'express';
 import { registerUser, loginUser, logoutUser, getCurrentUser, verifyEmail,
-     resendEmailVerification, resetForgotPassword} from '../controllers/auth.controllers.js';
+     resendEmailVerification, resetForgotPassword, changeCurrentPassword} from '../controllers/auth.controllers.js';
 import { userRegisterValidator, userLoginValidator,
-        forgotPasswordValidator, resetPasswordValidator}
+        forgotPasswordValidator, resetPasswordValidator, changeCurrentPasswordValidator }
  from '../validators/index.js';
 import { validate } from '../middlewares/validator.middleware.js';
 import { verifyJWT } from '../middlewares/auth.middleware.js';
@@ -18,4 +18,5 @@ router.route('/reset-forgot-password/:resetToken').post(resetPasswordValidator()
 router.route('/logout').post(verifyJWT, logoutUser);
 router.route('/current-user').get(verifyJWT, getCurrentUser);
 router.route('/resend-email-verification').post(verifyJWT, resendEmailVerification);
+router.route('/change-password').post(verifyJWT, changeCurrentPassword);
 export default router;

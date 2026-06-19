@@ -241,6 +241,18 @@ const resetForgotPassword = asyncHandler(async(req, res) => {
         .status(200)
         .json(new ApiResponse(200, {}, "Password has been reset successfully"))
 })
+const changeCurrentPassword = asyncHandler(async(req, res) => {
+    const {oldPassword, newPassword} = req.body;
+    const isPasswordValid = await user.isPasswordCorrect(oldPassword);
+    if(!isPasswordValid){
+        throw new ApiError(400, "Invalid old password");
+    }
+    user.password = newPassword;
+    await user.save({validateBeforeSave: false});
+    return res
+        .status(200)
+        .json(new ApiResponse(200, {}, "Password has been changed successfully"))
+})
 
 export { 
     registerUser,
@@ -251,5 +263,6 @@ export {
     forgotPasswordRequest,
     resendEmailVerification,
     resetForgotPassword,
+    changeCurrentPassword
 };
  
