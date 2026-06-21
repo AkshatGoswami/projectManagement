@@ -22,3 +22,17 @@ const createProject = asyncHandler(async (req, res) => {
     })
     return res.status(200).json(new ApiResponse(200, { project }, "Project created successfully"))
 })
+const updateProject = asyncHandler(async (req, res) => {
+    const { projectId } = req.params;
+    const { name, description } = req.body;
+    const project = await Project.findById(projectId);
+    if (!project) {
+        throw new ApiError(404, "Project not found");
+    }
+    const updatedProject = await Project.findByIdAndUpdate(
+        projectId,
+        { name, description },
+        { new: true }
+    );
+    return res.status(200).json(new ApiResponse(200, { project: updatedProject }, "Project updated successfully"));
+});
