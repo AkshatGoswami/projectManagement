@@ -133,6 +133,10 @@ const addMemberToProject = asyncHandler(async (req, res) => {
             user: new mongoose.Types.ObjectId(user.req._id),
             project: new mongoose.Types.ObjectId(projectId), 
             role: role
+        },
+        {
+            new: true,
+            upsert: true
         }
      )
      return res.status(201).json(new ApiResponse(201, {}, "Member added successfully"))
@@ -144,4 +148,5 @@ export {
     deleteProject,
     getProject,
     getProjectById,
+    addMemberToProject
 }
