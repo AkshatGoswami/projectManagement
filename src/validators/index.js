@@ -1,5 +1,5 @@
-import { body } from "express-validator";
-import { AvailableUserRoles } from "../utils/constants";
+import { body, param } from "express-validator";
+import { AvailableTaskStatus, AvailableUserRoles } from "../utils/constants.js";
 
 const userRegisterValidator = () => {
     return [
@@ -102,6 +102,94 @@ const addMembertoProjectValidator = () => {
          .withMessage("Role is invalid")
     ] 
 }
+//Task Validators
+const createTaskValidator = () => {
+    return [
+        body("title")
+            .trim()
+            .notEmpty()
+            .withMessage("Title is required")
+            .isLength({ min: 3, max: 100 })
+            .withMessage("Title must be between 3 and 100 characters"),
+        body("description")
+            .optional({ values: "falsy" })
+            .trim()
+            .isLength({ max: 1000 })
+            .withMessage("Description must be at most 1000 characters"),
+        body("status")
+            .optional()
+            .isIn(AvailableTaskStatus)
+            .withMessage("Status is invalid"),
+        body("assignedTo")
+            .optional()
+            .isMongoId()
+            .withMessage("Assigned user ID is invalid")
+    ];
+};
+
+const updateTaskValidator = () => {
+    return [
+        body("title")
+            .optional({ values: "falsy" })
+            .trim()
+            .isLength({ min: 3, max: 100 })
+            .withMessage("Title must be between 3 and 100 characters"),
+        body("description")
+            .optional({ values: "falsy" })
+            .trim()
+            .isLength({ max: 1000 })
+            .withMessage("Description must be at most 1000 characters"),
+        body("status")
+            .optional()
+            .isIn(AvailableTaskStatus)
+            .withMessage("Status is invalid"),
+        body("assignedTo")
+            .optional()
+            .isMongoId()
+            .withMessage("Assigned user ID is invalid")
+    ];
+};
+
+const createSubTaskValidator = () => {
+    return [
+        body("title")
+            .trim()
+            .notEmpty()
+            .withMessage("Title is required")
+            .isLength({ min: 3, max: 100 })
+            .withMessage("Title must be between 3 and 100 characters"),
+        body("task")
+            .notEmpty()
+            .withMessage("Task ID is required")
+            .isMongoId()
+            .withMessage("Task ID is invalid"),
+        body("createdBy")
+            .notEmpty()
+            .withMessage("Creator is required")
+            .isMongoId()
+            .withMessage("Creator ID is invalid")
+    ];
+};
+
+const projectIdParamValidator = () => {
+    return [
+        param("projectId")
+            .notEmpty()
+            .withMessage("Project ID is required")
+            .isMongoId()
+            .withMessage("Project ID is invalid")
+    ];
+};
+
+const taskIdParamValidator = () => {
+    return [
+        param("taskId")
+            .notEmpty()
+            .withMessage("Task ID is required")
+            .isMongoId()
+            .withMessage("Task ID is invalid")
+    ];
+};
 
 export { userRegisterValidator, 
     userLoginValidator, 
@@ -109,5 +197,10 @@ export { userRegisterValidator,
     resetPasswordValidator, 
     changeCurrentPasswordValidator,
     createProjectValidator,
-    addMembertoProjectValidator
+    addMembertoProjectValidator,
+    createTaskValidator,
+    updateTaskValidator,
+    createSubTaskValidator,
+    projectIdParamValidator,
+    taskIdParamValidator,
  };

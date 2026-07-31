@@ -21,10 +21,12 @@ app.use(cors({
 import healthCheckRouter from "./routes/healthCheck.router.js";
 import authRouter from './routes/auth.routes.js';
 import projectRouter from './routes/project.routes.js';
+import taskRouter from './routes/task.routes.js';
 // use the routes
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/healthcheck", healthCheckRouter);
 app.use("/api/v1/projects", projectRouter);
+app.use("/api/v1/tasks", taskRouter);
 
 app.get("/", (req,res) => {
     res.send("Welcome to project management system!");
