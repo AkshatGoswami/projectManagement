@@ -16,3 +16,4 @@ const projectNoteSchema = new Schema({
         required:true
     }
 },{timestamps:true})
+export const Notes = mongoose.model("Notes", projectNoteSchema);
