@@ -190,6 +190,26 @@ const taskIdParamValidator = () => {
             .withMessage("Task ID is invalid")
     ];
 };
+// Project Notes Validators
+const createProjectNoteValidator = () => {
+    return [
+        body("content")
+            .notEmpty()
+            .withMessage("Note content is required")
+            .isLength({ max: 1000 })
+            .withMessage("Note content must be at most 1000 characters")
+    ];
+};
+
+const projectNoteIdParamValidator = () => {
+    return [
+        param("projectNoteId")
+            .notEmpty()
+            .withMessage("Project Note ID is required")
+            .isMongoId()
+            .withMessage("Project Note ID is invalid")
+    ];
+};
 
 export { userRegisterValidator, 
     userLoginValidator, 
@@ -203,4 +223,6 @@ export { userRegisterValidator,
     createSubTaskValidator,
     projectIdParamValidator,
     taskIdParamValidator,
+    createProjectNoteValidator,
+    projectNoteIdParamValidator
  };
