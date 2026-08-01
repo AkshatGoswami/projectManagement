@@ -10,7 +10,22 @@ import { subtask as Subtask } from "../models/subtask.models.js";
 import { Notes } from "../models/note.models.js";
 
 const createProjectNotes = asyncHandler(async (req, res) => {
-    //create a note for a project
+    const { prjectId } = req.params;
+    const { createdBy, content } = req.body;
+    const project = await Project.findById(prjectId);
+
+    if(!project){
+        throw new ApiError(404, " Project not found ");
+    }
+   const notes = await Notes.create({
+        project: new mongoose.Types.ObjectId(prjectId),
+        createdBy: new mongoose.Types.ObjectId(req.user._id),
+        content
+    });
+
+    return res.status(200).json(new ApiResponse(
+        200, notes, "Notes creayed successfully"
+    ));
 });
 const getProjectNotes = asyncHAndler(async (req, res) => {
 //  get project notes
