@@ -28,16 +28,49 @@ const createProjectNotes = asyncHandler(async (req, res) => {
     ));
 });
 const getProjectNotes = asyncHAndler(async (req, res) => {
-//  get project notes
+    const { projectId } = req.params;
+    const project = await Project.findById(projectId);
+    if(!project) {
+        throw new ApiError(404, " Project not found ");
+    }
+    const notes = await Notes.find({ project: new mongoose.Types.ObjectId(projectId) });
+    return res.status(200).json(new ApiResponse(
+        200, notes, "Notes fetched successfully"
+    ));
 });
 const getProjectNotesById = asyncHandler(async (req, res) => {
-    // get notes by id
+    const { projectId } = req.params;
+    const notes = await Notes.findById(projectId);
+    if (!notes) {
+        throw new ApiError(404, "Notes not found");
+    }
+    return res.status(200).json(new ApiResponse(200, { notes }, "Notes fetched successfully"));
 });
 const updateProjectNotes = asyncHandler(async (req, res) => {
-    //  update project notes
+    const { projectId } = req.params; 
+    const { content, createdBy } = req.body;
+    const project = await Project.findById(projectId);
+    if(!project){
+        throw new ApiError(404, " Project not found ");
+    }
+    const updatedNotes = await Notes.findByIdAndUpdate(
+        projectId,
+        { content, createdBy },
+        { new: true }
+    );
+    return res.status(200).json(new ApiResponse(
+        200, updatedNotes, "Notes updated successfully"
+    ));
 });
 const deleteProjectNotes = asyncHandler(async (req, res) => {
-    //delete project notes
+   const { projectId } = req.params; 
+   const project = await Project.findByIdAndDelete(projectId);
+    if(!project){
+        throw new ApiError(404, " Project not found ");
+    }
+    return res.status(200).json(new ApiResponse(
+        200, null, "Notes deleted successfully"
+    ));
 });
 
 export{
