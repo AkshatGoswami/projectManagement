@@ -93,8 +93,6 @@ const loginUser = asyncHandler(async (req, res) => {
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
     };
-    console.log("Access Token:", accessToken);
-    console.log("Refresh Token:", refreshToken);
     return res
       .status(200)
       .cookie("accessToken", accessToken, cookieOptions)
